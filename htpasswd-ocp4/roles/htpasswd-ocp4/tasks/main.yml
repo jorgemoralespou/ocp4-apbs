@@ -12,12 +12,15 @@
     state: touch
 
 - name: Create Admin user
-  shell: htpasswd -b htpasswd "{{ admin_username }}" "{{ admin_password }}"
+  command: htpasswd -b htpasswd "{{ admin_username }}" "{{ admin_password }}"
   args:
     chdir: "{{ tmp_dir.path }}"
 
+- name: Grant cluster-admin to Admin user
+  command: oc adm policy add-cluster-role-to-user cluster-admin "{{ admin_username }}" --as system:admin
+
 - name: Create regular users
-  shell: htpasswd -b htpasswd "{{ item }}" "{{ user_password }}"
+  command: htpasswd -b htpasswd "{{ item }}" "{{ user_password }}"
   with_sequence: start={{ 1 }} end={{ user_count }} format={{ user_username_format }}
   args:
     chdir: "{{ tmp_dir.path }}"
