@@ -1,0 +1,39 @@
+---
+# tasks file for htpasswd-ocp4
+- name: "Create temporary directory"
+  tempfile:
+    state: directory
+    path: "/tmp/"
+  register: tmp_dir
+
+- name: Create htpasswd file
+  file: 
+    path: "{{ tmp_dir.path }}/htpasswd"
+    state: touch
+
+- name: Create Admin user
+  shell: htpasswd -b htpasswd "{{ admin_username }}" "{{ admin_password }}"
+  args:
+    chdir: "{{ tmp_dir.path }}"
+
+- name: Create regular users
+  shell: htpasswd -b htpasswd "{{ item }}" "{{ user_password }}"
+  with_sequence: start={{ 1 }} end={{ user_count }} format={{ user_username_format }}
+  args:
+    chdir: "{{ tmp_dir.path }}"
+
+- name: Create htpasswd Secret
+  command: oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=htpasswd --as system:admin
+  ignore_errors: true
+  args:
+    chdir: "{{ tmp_dir.path }}"
+
+- name: Copy OAuth configuration file to a know location
+  copy:
+    src: "oauth-htpasswd.yaml"
+    dest: "{{ tmp_dir.path }}"
+
+- name: Update OAuth Configuration
+  command: oc apply -f oauth-htpasswd.yaml --as system:admin
+  args:
+    chdir: "{{ tmp_dir.path }}"

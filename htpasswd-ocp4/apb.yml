@@ -1,0 +1,52 @@
+version: '1.0.0'
+name: htpasswd-ocp4
+description: Configures HTPasswd authentication on an OCP 4 cluster
+bindable: False
+async: optional
+metadata:
+  displayName: htpasswd-ocp4
+plans:
+  - name: default
+    description: Configures authentication using htpasswd and creates users
+    free: True
+    metadata:
+      displayName: Default
+    parameters:
+    - name: admin_username
+      title: Admin Username
+      description: Admin username
+      type: string
+      required: true
+      default: admin
+      display_type: text
+      display_group: Admin username
+    - name: admin_password
+      title: Admin Password
+      description: Admin password
+      type: string
+      required: true
+      display_type: password
+      display_group: Admin User
+    - name: user_count
+      title: Number of regular users
+      description: Number of regular users
+      type: int
+      default: 1
+      required: True
+      display_group: Regular users
+    - name: user_username_format
+      title: Format to apply to the usernames
+      description: Format to apply to the usernames
+      type: string
+      required: true
+      default: user%d
+      display_type: text
+      display_group: Regular users
+    - name: user_password
+      title: Password for the regular users
+      description: Password for the regular users
+      type: string
+      required: true
+      default: openshift
+      display_type: text
+      display_group: Regular users

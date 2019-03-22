@@ -1,0 +1,7 @@
+---
+# defaults file for htpasswd-ocp4
+admin_username: admin
+admin_password: 
+user_count: 1
+user_username_format: user%d
+user_password: openshift

@@ -1,0 +1,8 @@
+- name: htpasswd-ocp4 playbook to provision the application
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    apb_action: provision
+  roles:
+  - role: htpasswd-ocp4
