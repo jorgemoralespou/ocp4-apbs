@@ -1,0 +1,46 @@
+---
+- name: Check if CSV is Installed
+  command: oc get csv --all-namespaces -o jsonpath='{.items[?(@.metadata.name=="{{ _template_broker_subscription_csv }}")].metadata.namespace}'
+  register: csv_namespace
+
+- name: Set servicebroker install fact
+  set_fact:
+    install_templatebroker: csv_namespace.stdout == ""
+
+- name: Show Where template Service Broker is installed
+  debug:
+    msg: "Template service broker was already installed in {{ csv_namespace.stdout }}"
+  when: not install_templatebroker|bool
+
+- name: Create OpenShift Objects for Template Service Broker
+  k8s:
+    state: present
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('template', item ) | from_yaml }}"
+  loop:
+  - ./templates/templateservicebroker/broker_project.j2
+  - ./templates/templateservicebroker/operator_group.j2
+#  - ./templates/templateservicebroker/catalog_source.j2
+  - ./templates/templateservicebroker/subscription.j2
+  when: install_templatebroker|bool
+
+- name: Wait until CSV is Installed
+  command: oc get csv "{{ _template_broker_subscription_csv }}" -o jsonpath --template='{.status.phase}' -n "{{ _template_broker_project }}"
+  register: csv
+  retries: 30
+  delay: 10
+  until: csv.stdout == "Succeeded"
+  when: install_templatebroker|bool
+
+- name: Create Template Service Broker
+  k8s:
+    state: present
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('template', item ) | from_yaml }}"
+  loop:
+  - ./templates/templateservicebroker/template_broker.j2
+  when: install_templatebroker|bool

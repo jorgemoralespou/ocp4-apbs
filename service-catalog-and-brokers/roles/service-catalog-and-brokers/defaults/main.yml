@@ -1,10 +1,13 @@
 ---
-ocp_username: opentlc-mgr
+ocp_username: kubeadmin
 
 # defaults file for service-catalog-and-brokers
-_broker_project: openshift-automation-broker
-_broker_project_display: "OpenShift Automation Broker"
-_broker_subscription_csv: "automationbrokeroperator.v0.2.0"
+_template_broker_project: openshift-template-service-broker
+_template_broker_project_display: "OpenShift Template Service Broker"
+_template_broker_subscription_csv: "templateservicebrokeroperator.v0.2.0"
+_automation_broker_project: openshift-automation-broker
+_automation_broker_project_display: "OpenShift Automation Broker"
+_automation_broker_subscription_csv: "automationbrokeroperator.v0.2.0"
 
 # One of the following needs to be True
 

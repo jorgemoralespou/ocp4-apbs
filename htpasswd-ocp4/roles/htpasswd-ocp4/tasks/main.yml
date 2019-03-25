@@ -17,7 +17,7 @@
     chdir: "{{ tmp_dir.path }}"
 
 - name: Grant cluster-admin to Admin user
-  command: oc adm policy add-cluster-role-to-user cluster-admin "{{ admin_username }}" --as system:admin
+  command: oc adm policy add-cluster-role-to-user cluster-admin "{{ admin_username }}"
 
 - name: Create regular users
   command: htpasswd -b htpasswd "{{ item }}" "{{ user_password }}"
@@ -26,7 +26,7 @@
     chdir: "{{ tmp_dir.path }}"
 
 - name: Create htpasswd Secret
-  command: oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=htpasswd --as system:admin
+  command: oc create secret generic htpasswd-secret -n openshift-config --from-file=htpasswd=htpasswd
   ignore_errors: true
   args:
     chdir: "{{ tmp_dir.path }}"
@@ -37,6 +37,6 @@
     dest: "{{ tmp_dir.path }}"
 
 - name: Update OAuth Configuration
-  command: oc apply -f oauth-htpasswd.yaml --as system:admin
+  command: oc apply -f oauth-htpasswd.yaml
   args:
     chdir: "{{ tmp_dir.path }}"

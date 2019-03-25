@@ -1,0 +1,20 @@
+---
+# tasks file for service-catalog-and-brokers
+- name: Create OpenShift Objects for Service Broker
+  k8s:
+    state: present
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('file', item ) | from_yaml }}"
+  loop:
+  - ./files/service_catalog_api_server.yaml
+  - ./files/service_catalog_controller_manager.yaml
+
+#
+# Once this is done, you should see a new entries in Catalog:
+#  - Provisioned Services (Service Instances, Service Bindings)
+#  - Broker Management (Service Brokers, Service Classes)
+# Creates namespaces:
+#  - kube-service-catalog
+#  - kube-service-catalog-controller-manager

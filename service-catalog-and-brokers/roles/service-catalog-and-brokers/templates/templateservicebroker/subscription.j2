@@ -1,0 +1,12 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: templateservicebroker
+  namespace: "{{ _template_broker_project }}"
+spec:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: templateservicebroker
+  source: installed-community-test
+  sourceNamespace: "{{ _template_broker_project }}"
+  startingCSV: "{{ _template_broker_subscription_csv }}"

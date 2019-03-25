@@ -2,7 +2,7 @@ apiVersion: operators.coreos.com/v1alpha2
 kind: OperatorGroup
 metadata:
   name: automation-broker-group
-  namespace: "{{ _broker_project }}"
+  namespace: "{{ _automation_broker_project }}"
 spec:
   targetNamespaces:
-  - "{{ _broker_project }}"
+  - "{{ _automation_broker_project }}"

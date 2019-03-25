@@ -26,7 +26,7 @@ oc new-project ocp-workshops
 ### Grant service accounts in the test project the cluster-admin role
 
 ```bash
-oc adm policy add-cluster-role-to-group sudoer system:serviceaccounts:ocp-workshops
+oc adm policy add-cluster-role-to-group cluster-admin system:serviceaccounts:ocp-workshops
 ```
 
 ### Update the com.redhat.apb.spec LABEL
