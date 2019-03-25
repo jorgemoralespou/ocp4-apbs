@@ -1,0 +1,8 @@
+- name: service-catalog-and-brokers playbook to provision the application
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    apb_action: provision
+  roles:
+  - role: service-catalog-and-brokers

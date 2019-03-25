@@ -1,0 +1,14 @@
+version: '1.0.0'
+name: service-catalog-and-brokers
+description: Configures Service Catalog and brokers on an OCP 4 cluster
+bindable: False
+async: optional
+metadata:
+  displayName: service-catalog-and-brokers
+plans:
+  - name: default
+    description: This default plan deploys service-catalog-and-brokers
+    free: True
+    metadata:
+      displayName: Default
+    parameters: []

@@ -1,6 +1,6 @@
-# OAUth Config and HTPasswd for OCP4
+# Service Catalog and Brokers for OCP4
 
-The provided Ansible Playbook Bundle automates preparing an OpenShift cluster with an HTPasswd configuration and creating users.
+The provided Ansible Playbook Bundle automates preparing an OpenShift cluster with the Service Catalog and Service Brokers (automation broker / template service broker).
 
 ## Use an installed APB on OpenShift
 Select the item from the catalog.
@@ -26,7 +26,8 @@ oc new-project ocp-workshops
 ### Grant service accounts in the test project the cluster-admin role
 
 ```bash
-oc adm policy add-cluster-role-to-group sudoer system:serviceaccounts:ocp-workshops
+# oc adm policy add-cluster-role-to-group sudoer system:serviceaccounts:ocp-workshops
+oc adm policy add-cluster-role-to-group cluster-admin system:serviceaccounts:ocp-workshops
 ```
 
 ### Update the com.redhat.apb.spec LABEL
@@ -41,13 +42,13 @@ apb bundle prepare
 At this point we have a fully formed APB that we can build. In this example, we'll build an APB using the OpenShift build system. Let's first create a `buildconfig` for the APB. Perform this step when you're building a new APB that you haven't previously built on OpenShift:
 
 ```bash
-oc new-build --binary=true --name htpasswd-ocp4 -n ocp-workshops
+oc new-build --binary=true --name service-catalog-and-brokers -n ocp-workshops
 ```
 
 To start the build from the current directory and follow the logs:
 
 ```bash
-oc start-build --follow --from-dir . htpasswd-ocp4 -n ocp-workshops
+oc start-build --follow --from-dir . service-catalog-and-brokers -n ocp-workshops
 ```
 
 If the build completes successfully, you'll see some newly available imagestreams:
@@ -56,7 +57,7 @@ If the build completes successfully, you'll see some newly available imagestream
 oc get is -n ocp-workshops
 NAME           DOCKER REPO                                  TAGS      UPDATED
 apb-base       172.30.1.1:5000/ocp-workshops/apb-base       latest    4 minutes ago
-htpasswd-ocp4  172.30.1.1:5000/ocp-workshops/htpasswd-ocp4  latest    3 seconds ago
+service-catalog-and-brokers  172.30.1.1:5000/ocp-workshops/service-catalog-and-brokers  latest    3 seconds ago
 ```
 
 We can now add the internal OpenShift registry to our list of configured registries:
@@ -74,13 +75,13 @@ WARN 1 specs of 2 discovered specs failed validation from registry: openshift-re
 INFO Registry my-registry has 1 valid APBs available from 2 images scanned
   APB                   IMAGE                                               REGISTRY
   ----------------- -+- ------------------------------------------- -+- -----------
-  htpasswd-ocp4  |  172.30.1.1:5000/ocp-workshops/htpasswd-ocp4  |  my-registry
+  service-catalog-and-brokers  |  172.30.1.1:5000/ocp-workshops/service-catalog-and-brokers  |  my-registry
 ```
 
 __NOTE__: If you had the registry previously registered (maybe another cluster), you can delete it with: `apb registry remove my-registry`
 
 ### Running the APB
-Now that `apb` is aware of the `htpasswd-ocp4` APB in the registry, we can perform any supported action against the APB. The `apb bundle` subcommand gives you some actions you can perform on a specific bundle in a registry. You can use the `--help` flag to see what options are available:
+Now that `apb` is aware of the `service-catalog-and-brokers` APB in the registry, we can perform any supported action against the APB. The `apb bundle` subcommand gives you some actions you can perform on a specific bundle in a registry. You can use the `--help` flag to see what options are available:
 
 ```
 apb bundle --help
@@ -108,20 +109,20 @@ Global Flags:
 Use "apb bundle [command] --help" for more information about a command.
 ```
 
-We can `provision` the `htpasswd-ocp4` that now exists in the registry by running:
+We can `provision` the `service-catalog-and-brokers` that now exists in the registry by running:
 
 ```bash
-apb bundle provision htpasswd-ocp4 -n ocp-workshops --follow
+apb bundle provision service-catalog-and-brokers -n ocp-workshops --follow
 ```
 
 The provision command will prompt you for all required parameters to your APB.
 
 __NOTE__: The `--follow` flag used above will show logs produced by the running APB.
 
-You can `deprovision` the `htpasswd-ocp4` that now exists in the registry by running:
+You can `deprovision` the `service-catalog-and-brokers` that now exists in the registry by running:
 
 ```bash
-apb bundle deprovision htpasswd-ocp4 -n ocp-workshops --follow
+apb bundle deprovision service-catalog-and-brokers -n ocp-workshops --follow
 ```
 
 The deprovision command will prompt you for the specific instance to delete and all required parameters to your APB.
