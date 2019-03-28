@@ -5,12 +5,20 @@
 
 - name: Set servicebroker install fact
   set_fact:
-    install_broker: csv_namespace.stdout == ""
+    install_broker: '{{ csv_namespace.stdout == "" }}'
+
+- name: "Debug csv_namespace"
+  debug:
+    var: csv_namespace
+
+- name: "Debug install_broker"
+  debug:
+    var: install_broker
 
 - name: Show where Automation Broker is installed
   debug:
     msg: "Automation broker was already installed in {{ csv_namespace.stdout }}"
-  when: not install_broker|bool
+  when: not install_broker
 
 - name: Create OpenShift Objects for Automation Broker
   k8s:
@@ -24,7 +32,7 @@
   - ./templates/automationbroker/operator_group.j2
   - ./templates/automationbroker/catalog_source.j2
   - ./templates/automationbroker/subscription.j2
-  when: install_broker|bool
+  when: install_broker
 
 - name: Wait until CSV is Installed
   command: oc get csv "{{ _automation_broker_subscription_csv }}" -o jsonpath --template='{.status.phase}' -n "{{ _automation_broker_project }}"
@@ -32,7 +40,7 @@
   retries: 30
   delay: 10
   until: csv.stdout == "Succeeded"
-  when: install_broker|bool
+  when: install_broker
 
 - name: Create Automation Broker
   k8s:
@@ -43,7 +51,7 @@
     definition: "{{ lookup('template', item ) | from_yaml }}"
   loop:
   - ./templates/automationbroker/automation_broker.j2
-  when: install_broker|bool
+  when: install_broker
 
 - name: Grant Automation Broker Service Account cluster-admin
   k8s:
@@ -52,4 +60,4 @@
     - strategic-merge
     - merge
     definition: "{{ lookup('template', './templates/automationbroker/cluster_role_binding.j2' ) | from_yaml }}"
-  when: install_broker|bool
+  when: install_broker
